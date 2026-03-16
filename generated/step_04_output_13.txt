@@ -1,0 +1,77 @@
+## 5. Data Model
+
+### `Order` Entity (`com.example.orderservice.model.Order`)
+The `Order` entity represents a customer's order. It is mapped to the `orders` table in the PostgreSQL database.
+
+| Field | Type | Description | Constraints |
+|---|---|---|---|
+| `id` | `Long` | Unique identifier for the order. | Primary Key, Auto-generated |
+| `customerId` | `Long` | Identifier of the customer who placed the order. | Not Null |
+| `itemIds` | `List<String>` | List of product SKUs or identifiers included in the order. | ElementCollection |
+| `totalAmount` | `BigDecimal` | The total monetary value of the order. | Not Null, Precision |
+| `status` | `OrderStatus` | Current status of the order. | Not Null, Enum (String) |
+| `createdAt` | `LocalDateTime` | Timestamp when the order was created. | Not Null |
+| `updatedAt` | `LocalDateTime` | Last timestamp when the order was updated. | Not Null |
+
+### `OrderStatus` Enum (`com.example.orderservice.model.OrderStatus`)
+Defines the possible states an `Order` can be in.
+
+- `PENDING`: Order has been placed but not yet processed.
+- `PROCESSING`: Order is being prepared for shipment.
+- `SHIPPED`: Order has been dispatched.
+- `DELIVERED`: Order has been successfully delivered to the customer.
+- `CANCELLED`: Order has been cancelled.
+
+## 6. Configuration
+
+### Application Properties
+
+The `orderservice` uses `application.properties` (or `application.yml`) for configuration. Below are common properties and their typical values:
+
+| Property | Type | Default Value | Description |
+|---|---|---|---|
+| `server.port` | `int` | `8080` | The port on which the application will run. |
+| `spring.application.name` | `String` | `orderservice` | The name of the Spring Boot application. |
+| `spring.datasource.url` | `String` | `jdbc:postgresql://localhost:5432/orders_db` | JDBC URL for PostgreSQL database connection. |
+| `spring.datasource.username` | `String` | `user` | Username for database access. |
+| `spring.datasource.password` | `String` | `password` | Password for database access. |
+| `spring.jpa.hibernate.ddl-auto` | `String` | `update` | Hibernate DDL generation strategy (e.g., `none`, `update`, `create-drop`). `create-drop` is good for tests. |
+| `spring.jpa.properties.hibernate.dialect` | `String` | `org.hibernate.dialect.PostgreSQLDialect` | Hibernate dialect for PostgreSQL. |
+| `spring.kafka.bootstrap-servers` | `String` | `localhost:9092` | Comma-separated list of Kafka broker addresses. |
+| `spring.kafka.producer.key-serializer` | `String` | `org.apache.kafka.common.serialization.StringSerializer` | Key serializer for Kafka producer. |
+| `spring.kafka.producer.value-serializer` | `String` | `org.springframework.kafka.support.serializer.JsonSerializer` | Value serializer for Kafka producer (for JSON). |
+| `spring.kafka.consumer.group-id` | `String` | `orderservice_consumer_group` | Consumer group ID for Kafka listeners. |
+| `spring.kafka.consumer.auto-offset-reset` | `String` | `earliest` | What to do when there is no initial offset in Kafka or if the current offset does not exist any more on the server (e.g. because that data has been deleted). |
+| `spring.kafka.consumer.key-deserializer` | `String` | `org.apache.kafka.common.serialization.StringDeserializer` | Key deserializer for Kafka consumer. |
+| `spring.kafka.consumer.value-deserializer` | `String` | `org.springframework.kafka.support.serializer.ErrorHandlingDeserializer` | Value deserializer for Kafka consumer (for JSON). Uses `JsonDeserializer` internally. |
+| `spring.kafka.consumer.properties.spring.json.value.default.type` | `String` | `java.lang.Object` (or specific DTO) | Hint for `JsonDeserializer` on expected payload type. |
+| `spring.cache.type` | `String` | `simple` | Type of caching to use (e.g., `none`, `simple`, `redis`, `ehcache`). |
+| `spring.profiles.active` | `String` | `dev` | Comma-separated list of active profiles. |
+
+### Spring Profiles and Their Effects
+Spring profiles allow for environment-specific configuration.
+- **`dev`**: Default profile for local development. Typically uses an embedded database (H2) or local Dockerized services (PostgreSQL, Kafka). Logging is usually set to DEBUG.
+- **`test`**: Used during integration and end-to-end testing. Often uses Testcontainers for isolated and ephemeral dependencies (PostgreSQL, Kafka). May activate specific test-related configurations.
+- **`prod`**: Production environment profile. Configured with external, highly available services (managed databases, Kafka clusters). Optimized for performance and security. Logging is typically INFO/ERROR.
+- **`docker`**: Specific profile for running inside Docker containers. Might use hostnames (e.g., `host.docker.internal` or service names `kafka:9092`, `postgres:5432`) instead of `localhost` for service discovery.
+
+To activate a profile, use `spring.profiles.active` property or the `--spring.profiles.active` CLI argument.
+
+### Environment Variables
+Environment variables can override `application.properties`. Common ones include:
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_KAFKA_BOOTSTRAP_SERVERS`
+- `SERVER_PORT`
+- `SPRING_PROFILES_ACTIVE`
+
+## 7. Build & Run
+
+### Prerequisites
+- Java Development Kit (JDK) 17 or higher
+- Maven 3.6.0 or higher
+- Docker (for running services with Docker Compose or Testcontainers)
+
+### Build Commands
+To compile the project and package it into a JAR file:

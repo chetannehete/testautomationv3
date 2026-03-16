@@ -1,0 +1,4 @@
+### Docker Support
+The service can be containerized. A `Dockerfile` (not generated in this prompt but assumed) would typically build a JAR and run it.
+
+Example `Dockerfile` (conceptual):

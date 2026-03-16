@@ -1,0 +1,35 @@
+@startuml C4_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(customer, "Customer", "A customer using an e-commerce platform.")
+Person(admin, "Administrator", "An administrator managing orders.")
+
+System_Ext(authService, "Authentication Service", "Handles user authentication and authorization.")
+System_Ext(paymentService, "Payment Service", "Processes payments for orders.")
+System_Ext(inventoryService, "Inventory Service", "Manages product stock levels.")
+System_Ext(notificationService, "Notification Service", "Sends notifications related to order status changes.")
+System_Ext(externalCustomerSystem, "External Customer System", "Any external system interacting with order data.")
+
+
+Boundary(orderserviceContext, "Order Service") {
+    Container(orderserviceApp, "Order Service Application", "Spring Boot (Java 17+)", "Provides REST API for order management and publishes order events.")
+    ContainerDb(ordersDb, "Order Database", "PostgreSQL", "Stores order information including order details, status, customer ID, etc.")
+    ContainerQueue(kafkaBroker, "Kafka Message Broker", "Apache Kafka", "Facilitates asynchronous, event-driven communication for order events.")
+}
+
+' Relationships
+Rel(customer, orderserviceApp, "Uses", "HTTPS (REST)")
+Rel(admin, orderserviceApp, "Uses", "HTTPS (REST)")
+
+Rel_D(orderserviceApp, authService, "Authenticates/Authorizes requests with", "HTTPS (REST)")
+Rel_D(orderserviceApp, paymentService, "Interacts with (Future consideration)", "HTTPS (REST)") ' Placeholder, as no explicit Feign client detected
+
+Rel(orderserviceApp, ordersDb, "Reads from and writes to", "JDBC")
+Rel_D(orderserviceApp, kafkaBroker, "Publishes Order Events to", "Kafka Protocol")
+
+Rel_D(inventoryService, kafkaBroker, "Consumes Order Created/Updated Events from", "Kafka Protocol")
+Rel_D(notificationService, kafkaBroker, "Consumes Order Status Update Events from", "Kafka Protocol")
+Rel_D(externalCustomerSystem, orderserviceApp, "Interacts with", "HTTPS (REST)")
+@enduml

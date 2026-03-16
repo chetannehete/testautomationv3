@@ -1,0 +1,13 @@
+---
+
+#### 6. `PATCH /api/v1/orders/{orderId}/cancel` - Cancel an order by ID
+
+| Field | Description |
+|-------|-------------|
+| **Method** | `PATCH` |
+| **Path** | `/api/v1/orders/{orderId}/cancel` |
+| **Request Body** | -- |
+| **Response Body** | `OrderResponse` (JSON) |
+| **Status Codes** | `200 OK`, `404 Not Found`, `409 Conflict` (Order cannot be cancelled in current state), `500 Internal Server Error` |
+
+**Curl Example:**

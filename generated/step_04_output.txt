@@ -1,0 +1,7 @@
+graph TD
+    Client[Client/Mobile App] -->|HTTP Request| Controller[OrderController]
+    Controller -->|DTO| Service[OrderService]
+    Service -->|Entity| Repository[OrderRepository]
+    Repository <-->|SQL| DB[(PostgreSQL/H2)]
+    Service -->|Event| Producer[OrderEventProducer]
+    Producer -->|Publish| Kafka((Kafka Broker))

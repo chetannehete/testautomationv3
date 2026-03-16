@@ -1,0 +1,9 @@
+javalang>=0.13.0
+Jinja2>=3.1.0
+click>=8.1.0
+mcp>=0.9.0
+
+# LLM Provider SDKs (install only the one you need)
+# google-generativeai>=0.8.0   # Gemini  — pip install google-generativeai
+# openai>=1.0.0                # OpenAI  — pip install openai
+# anthropic>=0.20.0            # Claude  — pip install anthropic

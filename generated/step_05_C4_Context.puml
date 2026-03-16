@@ -1,0 +1,30 @@
+@startuml C4_Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+' Persons
+Person(customer, "Customer", "A customer using an e-commerce platform.")
+Person(admin, "Administrator", "An administrator managing orders.")
+
+' Systems
+System(authService, "Authentication Service", "Handles user authentication and authorization.")
+System(paymentService, "Payment Service", "Processes payments for orders.")
+System(inventoryService, "Inventory Service", "Manages product stock levels.")
+System(notificationService, "Notification Service", "Sends notifications related to order status changes.")
+System_Ext(externalCustomerSystem, "External Customer System", "Any external system interacting with order data.")
+
+System_Boundary(orderserviceSystem, "Order Service") {
+    System(orderservice, "Order Service", "Manages the lifecycle of customer orders (creation, update, cancellation, deletion).")
+}
+
+' Relationships
+Rel(customer, orderservice, "Places/Manages Orders", "HTTPS (REST)")
+Rel(admin, orderservice, "Manages Orders", "HTTPS (REST)")
+
+Rel_D(orderservice, authService, "Authenticates/Authorizes Requests", "HTTPS (REST)")
+Rel_D(orderservice, paymentService, "Submits Order Details for Payment", "HTTPS (REST, Async)")
+Rel_D(orderservice, inventoryService, "Publishes Order Events (e.g., order created, items reserved)", "Kafka")
+Rel_D(orderservice, notificationService, "Publishes Order Events (e.g., status updates)", "Kafka")
+Rel_D(externalCustomerSystem, orderservice, "Retrieves/Updates Order Information", "HTTPS (REST)")
+@enduml

@@ -1,0 +1,31 @@
+@startuml C4_Component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+Container(orderserviceApp, "Order Service Application", "Spring Boot (Java 17+)") {
+
+    Component(orderController, "OrderController", "REST Controller", "Handles incoming HTTP requests, maps them to service calls, and returns HTTP responses.")
+    Component(orderService, "OrderService", "Business Logic Service", "Encapsulates order-specific business rules, orchestrates data access and event publishing.")
+    Component(orderRepository, "OrderRepository", "Spring Data JPA Repository", "Provides CRUD operations for 'Order' entities and custom queries for data retrieval.")
+    Component(orderEventProducer, "OrderEventProducer", "Kafka Event Producer", "Publishes order-related events (Created, Updated, Cancelled, Deleted) to Kafka topics.")
+    Component(globalExceptionHandler, "GlobalExceptionHandler", "Exception Handler", "Centralizes exception handling for the application, ensuring consistent error responses.")
+    Component(orderMapper, "OrderMapper", "Mapper Component", "Converts between OrderRequest/OrderResponse DTOs and Order entities.")
+    Component(orderEntity, "Order", "JPA Entity", "Represents the core Order data structure in the database.")
+    Component(resourceNotFoundException, "ResourceNotFoundException", "Custom Exception", "Thrown when a requested resource (e.g., Order by ID) cannot be found.")
+    Component(orderStatus, "OrderStatus", "Enum", "Defines the lifecycle states of an order.")
+
+    Rel(orderController, orderService, "Uses to execute business logic", "Method Calls")
+    Rel(orderService, orderRepository, "Reads/Writes Order data", "Method Calls")
+    Rel(orderService, orderEventProducer, "Publishes order events", "Method Calls")
+    Rel(orderService, orderMapper, "Maps DTOs to Entities and vice-versa", "Method Calls")
+    Rel(orderRepository, orderEntity, "Manages persistence of", "JPA")
+    Rel(orderService, resourceNotFoundException, "Throws", "Exception")
+    Rel(globalExceptionHandler, resourceNotFoundException, "Handles", "Exception")
+    Rel(globalExceptionHandler, IllegalStateException, "Handles", "Exception")
+    Rel(globalExceptionHandler, Exception, "Handles general", "Exception")
+    Rel(orderEntity, orderStatus, "Has a", "Enum Type")
+    Rel(orderService, orderStatus, "Uses", "Enum Type")
+    Rel_D(orderEventProducer, "KafkaTemplate<String, Object>", "Sends messages using", "Spring Kafka")
+}
+@enduml

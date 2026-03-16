@@ -1,0 +1,2 @@
+#### Run with `prod` profile (requires external PostgreSQL and Kafka configuration)
+Replace placeholder values with actual production credentials and endpoints.

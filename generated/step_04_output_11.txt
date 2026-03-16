@@ -1,0 +1,13 @@
+---
+
+#### 5. `DELETE /api/v1/orders/{orderId}` - Delete an order by ID
+
+| Field | Description |
+|-------|-------------|
+| **Method** | `DELETE` |
+| **Path** | `/api/v1/orders/{orderId}` |
+| **Request Body** | -- |
+| **Response Body** | -- (No Content) |
+| **Status Codes** | `204 No Content`, `404 Not Found`, `500 Internal Server Error` |
+
+**Curl Example:**

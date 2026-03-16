@@ -1,0 +1,13 @@
+### Endpoints
+
+#### 1. `POST /api/v1/orders` - Create a new order
+
+| Field | Description |
+|-------|-------------|
+| **Method** | `POST` |
+| **Path** | `/api/v1/orders` |
+| **Request Body** | `OrderRequest` (JSON) |
+| **Response Body** | `OrderResponse` (JSON) |
+| **Status Codes** | `201 Created`, `400 Bad Request` (Validation errors), `500 Internal Server Error` |
+
+**`OrderRequest` DTO:**

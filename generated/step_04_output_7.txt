@@ -1,0 +1,13 @@
+---
+
+#### 2. `GET /api/v1/orders/{orderId}` - Get an order by ID
+
+| Field | Description |
+|-------|-------------|
+| **Method** | `GET` |
+| **Path** | `/api/v1/orders/{orderId}` |
+| **Request Body** | -- |
+| **Response Body** | `OrderResponse` (JSON) |
+| **Status Codes** | `200 OK`, `404 Not Found`, `500 Internal Server Error` |
+
+**Curl Example:**

@@ -1,0 +1,57 @@
+### Common Error Codes
+- **`400 Bad Request`**:
+  - **Cause**: Client sent an invalid request payload (e.g., missing required fields, invalid data types, validation errors).
+  - **Example**: `{"status": 400, "error": "Validation failed: customerId must not be null"}`
+- **`404 Not Found`**:
+  - **Cause**: The requested order resource could not be found.
+  - **Example**: `{"status": 404, "error": "Order not found with id: 123"}`
+- **`409 Conflict`**:
+  - **Cause**: The request could not be completed due to a conflict with the current state of the resource.
+  - **Example**: `{"status": 409, "error": "Order with ID 456 cannot be cancelled in status DELIVERED."}`
+- **`500 Internal Server Error`**:
+  - **Cause**: An unexpected server-side error occurred.
+  - **Example**: `{"status": 500, "error": "Something went wrong internally."}`
+
+## 9. Troubleshooting
+
+### Common Errors and Fixes
+
+1.  **`Connection refused: localhost:5432` (or similar for Kafka)**
+    *   **Cause**: The PostgreSQL database or Kafka broker is not running or is not accessible at the configured host/port.
+    *   **Fix**:
+        *   Ensure Docker (if using containers) is running.
+        *   Check if the database/Kafka container is up (`docker ps`).
+        *   Verify `spring.datasource.url` and `spring.kafka.bootstrap-servers` properties are correct.
+        *   For local development, ensure native PostgreSQL/Kafka services are running.
+
+2.  **`Validation failed for argument...` (HTTP 400 Bad Request)**
+    *   **Cause**: The request body sent by the client violates validation constraints (e.g., `@NotNull`, `@Min`, `@Max`).
+    *   **Fix**:
+        *   Review the `OrderRequest` DTO definition and API documentation.
+        *   Ensure all required fields are present and data types match.
+        *   Check for boundary conditions on numeric fields.
+
+3.  **`ResourceNotFoundException` (HTTP 404 Not Found)**
+    *   **Cause**: An attempt was made to access or modify an order with an ID that does not exist in the database.
+    *   **Fix**:
+        *   Verify the `orderId` in the request path or payload is correct and corresponds to an existing order.
+        *   For debugging, check database contents directly.
+
+4.  **`IllegalStateException` (HTTP 409 Conflict)**
+    *   **Cause**: An operation (e.g., cancelling an order) was attempted on an order that is in a state where the operation is not allowed.
+    *   **Fix**:
+        *   Review the order's current `status` in the database.
+        *   Understand the business rules for state transitions. The `cancelOrder` endpoint, for example, prevents cancellation of `DELIVERED` orders.
+
+5.  **Kafka Producer/Consumer errors (e.g., deserialization errors, topic not found)**
+    *   **Cause**: Kafka configuration issues, incorrect topic names, or deserialization mismatches.
+    *   **Fix**:
+        *   Verify `spring.kafka.bootstrap-servers` points to active Kafka brokers.
+        *   Ensure Kafka topics (`order-created`, `order-updated`, etc.) exist or are configured for auto-creation.
+        *   Check `spring.kafka.producer.value-serializer` and `spring.kafka.consumer.value-deserializer` are correctly configured, especially for JSON payloads. The `spring.json.value.default.type` property is crucial for `JsonDeserializer`.
+
+### Debug Tips
+-   **Enable Debug Logging**: Set `logging.level.com.example.orderservice=DEBUG` in `application.properties` to get detailed application logs.
+-   **Database Inspection**: Use a database client (e.g., DBeaver, pgAdmin) to directly inspect the `orders` table and verify data state.
+-   **Kafka Tooling**: Use Kafka CLI tools (`kafka-console-consumer`, `kafka-topics`) or a UI tool (e.g., Kafka UI, Lenses) to inspect topics and messages.
+-   **IDE Debugger**: Use breakpoints in your IDE (IntelliJ, Eclipse, VS Code) to step through the code execution path.

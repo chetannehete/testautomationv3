@@ -1,0 +1,14 @@
+---
+
+#### 3. `GET /api/v1/orders/allOrders` - Get all orders with optional filtering and pagination
+
+| Field | Description |
+|-------|-------------|
+| **Method** | `GET` |
+| **Path** | `/api/v1/orders/allOrders` |
+| **Query Parameters** | `status` (Optional, String, e.g., "PENDING", "SHIPPED"), `page` (Optional, int, default 0), `size` (Optional, int, default 10) |
+| **Request Body** | -- |
+| **Response Body** | `List<OrderResponse>` (JSON) |
+| **Status Codes** | `200 OK`, `500 Internal Server Error` |
+
+**Curl Example (all pending orders, page 1, size 20):**

@@ -1,0 +1,6 @@
+This will produce a JAR file in the `target/` directory (e.g., `orderservice-0.0.1-SNAPSHOT.jar`).
+
+### Run Commands with Profiles
+
+#### Run with `dev` profile (local PostgreSQL and Kafka required)
+Ensure a PostgreSQL database and Kafka broker are running locally or via Docker Compose.

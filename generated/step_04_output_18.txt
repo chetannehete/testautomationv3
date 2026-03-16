@@ -1,0 +1,1 @@
+To run the Docker image (assuming Docker Compose setup for dependencies):

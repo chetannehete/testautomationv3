@@ -1,0 +1,1 @@
+curl -X PATCH http://localhost:8080/api/v1/orders/1/cancel

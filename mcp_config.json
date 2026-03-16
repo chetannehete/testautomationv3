@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "md-agent": {
+      "command": "python",
+      "args": ["-m", "md_agent.mcp_server"],
+      "cwd": "c:/Users/cheta/OneDrive/Desktop/aNTIGRAVITY/test automation",
+      "env": {}
+    }
+  }
+}

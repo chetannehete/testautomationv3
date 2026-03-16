@@ -1,0 +1,17 @@
+graph LR
+    subgraph Controller Layer
+        OC[OrderController]
+    end
+    subgraph Service Layer
+        OS[OrderService]
+    end
+    subgraph Integration Layer
+        OR[OrderRepository]
+        OEP[OrderEventProducer]
+        OM[OrderMapper]
+    end
+
+    OC --> OS
+    OS --> OR
+    OS --> OEP
+    OS --> OM

@@ -1,0 +1,32 @@
+## 3. Components
+
+| Component | Type | Responsibility | Dependencies |
+|--------------------------|-------------------|---------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| `OrderController`        | `rest_controller` | Handles incoming REST requests, marshals DTOs, and returns HTTP responses. Delegates business logic to `OrderService`. | `OrderService` |
+| `Order`                  | `entity`          | JPA Entity representing an order in the database. | -- |
+| `OrderStatus`            | `enum`            | Enum defining the possible states of an order (e.g., PENDING, SHIPPED). | -- |
+| `GlobalExceptionHandler` | `exception_handler` | Centralized exception handling for the entire application, mapping exceptions to HTTP status codes. | `ResourceNotFoundException` |
+| `ResourceNotFoundException` | `exception`       | Custom exception thrown when a requested resource is not found. | `String`, `Throwable` |
+| `OrderEventProducer`     | `component`       | Publishes order-related events to Kafka topics. | `KafkaTemplate<String, Object>` |
+| `OrderRepository`        | `repository`      | Provides CRUD operations and custom query methods for `Order` entities. | -- |
+| `OrderService`           | `service`         | Contains core business logic for order management, including validation, persistence, and event publishing. | `OrderRepository`, `OrderMapper`, `OrderEventProducer` |
+
+### Detailed Description of Service Classes
+
+#### `OrderService` (`com.example.orderservice.service.OrderService`)
+The `OrderService` class is the heart of the `orderservice` microservice. It encapsulates all business rules related to order processing.
+
+- **`createOrder(OrderRequest request)`**: Validates the incoming `OrderRequest`, maps it to an `Order` entity, persists it via `OrderRepository`, and publishes an `order-created` event to Kafka via `OrderEventProducer`. Returns an `OrderResponse`.
+- **`getOrderById(Long id)`**: Retrieves an order by its ID. Throws `ResourceNotFoundException` if the order is not found. Maps the `Order` entity to `OrderResponse`.
+- **`getAllOrders(String status, int page, int size)`**: Fetches a paginated list of orders. Can filter by `OrderStatus`. If no status is provided, retrieves all orders.
+- **`updateOrder(Long id, OrderRequest request)`**: Updates an existing order. Throws `ResourceNotFoundException` if the order does not exist. Applies updates, saves the entity, and publishes an `order-updated` event.
+- **`deleteOrder(Long id)`**: Deletes an order by its ID. Throws `ResourceNotFoundException` if not found. Publishes an `order-deleted` event.
+- **`cancelOrder(Long id)`**: Attempts to cancel an order. Validates if the order is in a cancellable state. If successful, updates the status to `CANCELLED`, persists the change, and publishes an `order-cancelled` event. Throws `IllegalStateException` if the order cannot be cancelled (e.g., already shipped/delivered).
+- **`isOrderOwnedByCustomer(Long orderId, Long customerId)`**: Checks if a specific order belongs to a given customer. Useful for authorization checks.
+
+## 4. API Reference
+
+**Base URL:** `/api/v1/orders`
+
+### Error Response Format
+All error responses from the `GlobalExceptionHandler` adhere to the following JSON structure:

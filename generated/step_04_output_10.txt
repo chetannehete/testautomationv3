@@ -1,0 +1,13 @@
+---
+
+#### 4. `PUT /api/v1/orders/{orderId}` - Update an existing order
+
+| Field | Description |
+|-------|-------------|
+| **Method** | `PUT` |
+| **Path** | `/api/v1/orders/{orderId}` |
+| **Request Body** | `OrderRequest` (JSON) |
+| **Response Body** | `OrderResponse` (JSON) |
+| **Status Codes** | `200 OK`, `400 Bad Request` (Validation errors), `404 Not Found`, `500 Internal Server Error` |
+
+**Curl Example:**
